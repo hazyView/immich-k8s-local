@@ -19,6 +19,8 @@ jobs:
     outputs:
       image_tag: ${{ steps.image_tag.outputs.tag }}
     steps:
+      - name: Set IMMICH_VERSION
+        run: echo "IMMICH_VERSION=1.134.0" >> $GITHUB_ENV
       - name: Checkout code
         uses: actions/checkout@v4
         with:

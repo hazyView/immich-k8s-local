@@ -1,4 +1,4 @@
-ARG IMMICH_VERSION=release # Or a specific tag like v1.95.0
+ARG IMMICH_VERSION=releases # Or a specific tag like v1.95.0
 ARG NODE_VERSION=18-alpine
 
 FROM node:${NODE_VERSION} AS builder

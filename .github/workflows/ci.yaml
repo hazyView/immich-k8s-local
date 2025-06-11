@@ -22,7 +22,9 @@ jobs:
       - name: Set IMMICH_VERSION
         id: immich_version
         run: |
-          LATEST_TAG=$(git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git | head -n 1 | cut -d'/' -f3)
+          git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git
+          LATEST_TAG=$(git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git | head -n 1 | awk -F/ '{print $3}')
+          # LATEST_TAG=$(git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git | head -n 1 | cut -d'/' -f3)
           if [ -z "$LATEST_TAG"; then
             LATEST_TAG="main"
           fi

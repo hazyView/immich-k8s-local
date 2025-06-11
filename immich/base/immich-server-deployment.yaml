@@ -18,7 +18,7 @@ spec:
       containers:
       - name: immich-server
         # Image will be set by Kustomize overlay from CI build
-        image: ghcr.io/immich-app/immich-server:latest # Placeholder
+        image: https://github.com/immich-app/immich/pkgs/container/immich-server:latest  # ghcr.io/immich-app/immich-server:latest # Placeholder
         imagePullPolicy: Always # To ensure CI updates are pulled
         ports:
         - containerPort: 3001

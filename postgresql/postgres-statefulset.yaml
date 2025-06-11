@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: immich-db
+spec:
+  serviceName: "postgres-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      # initContainers: # Not strictly needed with tensorchord/pgvecto-rs as extension should be available
+      # - name: init-pgvector-check
+      #   image: tensorchord/pgvecto-rs:pg14-v0.2.0 # Use same image as main container
+      #   command: ['sh', '-c', "echo 'Ensuring pgvector extension can be created by Immich'"]
+      containers:
+      - name: postgres
+        image: tensorchord/pgvecto-rs:pg14-v0.2.0 # Immich recommended image with pgvector
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          name: postgres
+        envFrom:
+        - configMapRef:
+            name: postgres-config
+        - secretRef:
+            name: postgres-secret
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+        securityContext:
+          runAsUser: 999 # PostgreSQL user ID in the tensorchord container (often 26 for official postgres, check tensorchord image)
+          runAsGroup: 999 # Corresponding group
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+      securityContext: # PodSecurityContext
+        fsGroup: 999 # Ensures the volume is writable by the postgres user/group
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: local-path # Or your Minikube default like 'standard'
+      resources:
+        requests:
+          storage: 5Gi # Adjust as needed for your library metadata

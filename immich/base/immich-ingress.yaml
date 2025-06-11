@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich-ingress
+  namespace: immich-app
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0" # Allow large file uploads
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600" # Increase timeout for uploads
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    # For web sockets used by Immich:
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-set-header: "Upgrade $http_upgrade"
+    nginx.ingress.kubernetes.io/proxy-set-header: "Connection 'upgrade'"
+    # Consider cert-manager for HTTPS in a more advanced setup
+spec:
+  ingressClassName: nginx # From minikube addons enable ingress
+  rules:
+  - host: immich.local.dev # Ensure this is in your /etc/hosts pointing to minikube ip
+    http:
+      paths:
+      - path: /api # Route API calls to immich-server
+        pathType: Prefix
+        backend:
+          service:
+            name: immich-server-svc
+            port:
+              number: 3001
+      - path: / # Default route to immich-web
+        pathType: Prefix
+        backend:
+          service:
+            name: immich-web-svc # Assuming you created immich-web-svc for immich-web deployment
+            port:
+              number: 80 # Service port for immich-web-svc

@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
+# Patches or specific configurations for local dev
+# For example, if you need to change resource limits for local dev:
+# patchesStrategicMerge:
+# - |-
+#   apiVersion: apps/v1
+#   kind: Deployment
+#   metadata:
+#     name: immich-server
+#     namespace: immich-app
+#   spec:
+#     template:
+#       spec:
+#         containers:
+#         - name: immich-server
+#           resources:
+#             requests:
+#               cpu: "100m"
+#               memory: "256Mi"
+#             limits:
+#               cpu: "500m"
+#               memory: "1Gi"
+
+# Image tags will be updated here by the CI pipeline
+images:
+- name: ghcr.io/hazyView/immich-server
+  newName: ghcr.io/hazyView/immich-server
+  newTag: placeholder-tag
+- name: ghcr.io/hazyView/immich-microservices
+  newName: ghcr.io/hazyView/immich-microservices
+  newTag: placeholder-tag
+- name: ghcr.io/hazyView/immich-web
+  newName: ghcr.io/hazyView/immich-web
+  newTag: placeholder-tag
+- name: ghcr.io/hazyView/immich-ml
+  newName: ghcr.io/hazyView/immich-ml
+  newTag: placeholder-tag

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: immich-app
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        securityContext:
+          runAsUser: 1000 # Standard redis user in official images
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true # Redis can run this way if data is on a volume
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts: # If Redis persistence is desired (not strictly required if only used as cache/queue)
+        - name: redis-data
+          mountPath: /data
+      volumes: # Add a PVC for Redis data if persistence is needed
+      - name: redis-data
+        emptyDir: {} # Or a PVC: persistentVolumeClaim: { claimName: redis-pvc }
+      securityContext:
+        fsGroup: 1000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-svc
+  namespace: immich-app
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: redis

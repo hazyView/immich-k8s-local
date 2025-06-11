@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-config
+  namespace: immich-app
+data:
+  # Database connection (points to the service in immich-db namespace)
+  DB_HOSTNAME: "postgres-svc.immich-db.svc.cluster.local"
+  DB_USERNAME: "immich_user" # From postgres-configmap in immich-db
+  DB_DATABASE_NAME: "immich"   # From postgres-configmap in immich-db
+
+  # Redis connection (we'll deploy Redis in immich-app namespace)
+  REDIS_HOSTNAME: "redis-svc.immich-app.svc.cluster.local"
+  REDIS_PORT: "6379"
+
+  NODE_ENV: "production"
+  LOG_LEVEL: "info" # info, debug, error
+
+  # URLs - these will be dynamically set by Ingress or overridden if needed
+  IMMICH_SERVER_URL: "http://immich.local.dev/api" # Placeholder, adjust per Ingress
+  IMMICH_WEB_URL: "http://immich.local.dev"       # Placeholder, adjust per Ingress
+
+  # Disable features not configured in this basic setup
+  TYPESENSE_ENABLED: "false"

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-ml
+  namespace: immich-app
+  labels:
+    app: immich-ml
+spec:
+  replicas: 1 # Can be 0 if not using features, or scaled
+  selector:
+    matchLabels:
+      app: immich-ml
+  template:
+    metadata:
+      labels:
+        app: immich-ml
+    spec:
+      containers:
+      - name: immich-microservices
+        image: ghcr.io/hazyView/immich-ml:latest # Placeholder
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: immich-config
+        - secretRef:
+            name: immich-secret
+        volumeMounts:
+        - name: immich-library
+          mountPath: /usr/src/app/upload # Or other paths it needs
+          # readOnly: true # If it only reads, otherwise false
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi" # Transcoding can be memory intensive
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: { drop: ["ALL"] }
+          runAsUser: 1001 # Match Dockerfile
+          runAsGroup: 1001 # Match Dockerfile
+      volumes:
+      - name: immich-library
+        persistentVolumeClaim:
+          claimName: immich-library-pvc
+      securityContext:
+        fsGroup: 1001 # Match Dockerfile

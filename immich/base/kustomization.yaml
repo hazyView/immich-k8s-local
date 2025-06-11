@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: immich-app # Default namespace for these resources
+resources:
+  - immich-namespace.yaml
+  - immich-configmap.yaml
+  - immich-secret.yaml # Ensure this is gitignored or use SealedSecrets in a real scenario
+  - immich-pvc.yaml
+  - redis-deployment.yaml
+  - immich-server-deployment.yaml
+  - immich-microservices-deployment.yaml
+  - immich-web-deployment.yaml
+  - immich-ml-deployment.yaml # Optional, comment out if not building/deploying ML
+  - immich-ingress.yaml
+commonLabels:
+  app.kubernetes.io/part-of: immich-stack
+  app.kubernetes.io/component: application

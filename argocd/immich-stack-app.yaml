@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: immich-stack
+  namespace: argocd # This Application resource itself lives in the argocd namespace
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # Ensures resources are deleted when App is deleted
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/hazyView/immich-k8s-local.git # Replace with your repo URL
+    targetRevision: HEAD # Or 'main' branch
+    path: . # Root of the repository, ArgoCD will use the root kustomization.yaml
+    kustomize:
+      # Optional: specify kustomize version if needed by ArgoCD's bundled kustomize
+      # version: v5.0.0 
+      commonAnnotations:
+        gitops-synced-by: argocd-immich-stack
+  destination:
+    server: https://kubernetes.default.svc # Deploy to the same cluster ArgoCD is in
+    # Namespaces are defined within our Kustomize bases (immich-db, immich-app)
+    # ArgoCD will deploy resources to the namespaces specified in their manifests.
+  syncPolicy:
+    automated:
+      prune: true    # Delete resources that are no longer in Git
+      selfHeal: true # Reconcile if live state deviates from Git
+    syncOptions:
+    - CreateNamespace=true # Allows ArgoCD to create namespaces defined in manifests if they don't exist
+    - PruneLast=true       # Deletes resources last, useful for CRDs or ordered deletion
+    # - ApplyOutOfSyncOnly=true # Optimizes sync by only applying out-of-sync resources
+  # Ignore differences for things that are auto-generated or managed by controllers
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/template/spec/containers/0/image # If image tag is managed by CI/CD but ArgoCD sees 'latest' vs SHA initially
+  # - group: ""
+  #   kind: Secret
+  #   name: immich-secret # If you manage this manually and don't want ArgoCD to touch it after initial deploy
+  #   namespace: immich-app

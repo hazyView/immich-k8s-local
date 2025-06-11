@@ -65,6 +65,8 @@ jobs:
             env.lowercase_username }}/immich-server:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            IMMICH_VERSION=${{ env.IMMICH_VERSION }}
       - name: Build and push immich-microservices
         uses: docker/build-push-action@v5
         with:

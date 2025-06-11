@@ -31,6 +31,11 @@ jobs:
           registry: ${{ env.GHCR_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Compute Lowercase Username
+        id: compute_username
+        run: |
+          LOWERCASE_USERNAME=$(echo "${{ env.GH_USERNAME }}" | tr '[:upper:]' '[:lower:]')
+          echo "lowercase_username=$LOWERCASE_USERNAME" >> $GITHUB_ENV    
       - name: Generate Image Tag
         id: image_tag
         run: |
@@ -44,10 +49,9 @@ jobs:
           context: ./immich/dockerfiles/server
           file: ./immich/dockerfiles/server/Dockerfile
           push: true
-          tags: ${{ env.GHCR_REGISTRY }}/$(echo "${{ env.GH_USERNAME }}" | tr '[:upper:]'
-            '[:lower:]')/immich-server:${{ steps.image_tag.outputs.tag }}, ${{
-            env.GHCR_REGISTRY }}/$(echo "${{ env.GH_USERNAME }}" | tr
-            '[:upper:]' '[:lower:]')/immich-server:latest
+          tags: ${{ env.GHCR_REGISTRY }}/${{ env.lowercase_username }}/immich-server:${{
+            steps.image_tag.outputs.tag }}, ${{ env.GHCR_REGISTRY }}/${{
+            env.lowercase_username }}/immich-server:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push immich-microservices
@@ -56,9 +60,9 @@ jobs:
           context: ./immich/dockerfiles/microservices
           file: ./immich/dockerfiles/microservices/Dockerfile
           push: true
-          tags: ${{ env.GHCR_REGISTRY }}/${{ env.GH_USERNAME }}/immich-microservices:${{
+          tags: ${{ env.GHCR_REGISTRY }}/${{ env.lowercase_username }}/immich-server:${{
             steps.image_tag.outputs.tag }}, ${{ env.GHCR_REGISTRY }}/${{
-            env.GH_USERNAME }}/immich-microservices:latest
+            env.lowercase_username }}/immich-microservices:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push immich-web
@@ -67,9 +71,9 @@ jobs:
           context: ./immich/dockerfiles/web
           file: ./immich/dockerfiles/web/Dockerfile
           push: true
-          tags: ${{ env.GHCR_REGISTRY }}/${{ env.GH_USERNAME }}/immich-web:${{
+           ${{ env.GHCR_REGISTRY }}/${{ env.lowercase_username }}/immich-server:${{
             steps.image_tag.outputs.tag }}, ${{ env.GHCR_REGISTRY }}/${{
-            env.GH_USERNAME }}/immich-web:latest
+            env.lowercase_username }}/immich-web:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Update Kustomize Image Tags

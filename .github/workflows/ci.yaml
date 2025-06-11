@@ -20,13 +20,10 @@ jobs:
       image_tag: ${{ steps.image_tag.outputs.tag }}
     steps:
       - name: Set IMMICH_VERSION
-      - run: 
+      - run: |
 	  # Retrieve latest release tag from immich-app/immich
-          
 	  LATEST_TAG=$(git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git | head -n 1 | cut -d'/' -f3)
-          
-	  echo "Latest Immich tag determined as: $LATEST_TAG"
-          
+	  # echo "Latest Immich tag determined as: $LATEST_TAG"
 	  echo "IMMICH_VERSION=$LATEST_TAG" >> $GITHUB_ENV
       - name: Checkout code
         uses: actions/checkout@v4

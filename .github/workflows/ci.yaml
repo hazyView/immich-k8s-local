@@ -19,16 +19,6 @@ jobs:
     outputs:
       image_tag: ${{ steps.image_tag.outputs.tag }}
     steps:
-      - name: Set IMMICH_VERSION
-        id: immich_version
-        run: |
-          LATEST_TAG=$(git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git | head -n 1 | awk -F/ '{print $3}')
-          if [ -z "$LATEST_TAG"; then
-            echo "Failed to fetch latest tag, defaulting to v1.134.0"
-            LATEST_TAG="v1.134.0"
-          fi
-          echo "Latest Immich tag is: $LATEST_TAG"
-          echo "IMMICH_VERSION=$LATEST_TAG" >> $GITHUB_ENV
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -53,6 +43,16 @@ jobs:
           TAG=$(git rev-parse --short HEAD)
           echo "Generated tag: $TAG"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - name: Set IMMICH_VERSION
+        id: immich_version
+        run: |
+          LATEST_TAG=$(git ls-remote --tags --sort="-v:refname" https://github.com/immich-app/immich.git | head -n 1 | awk -F/ '{print $3}')
+          if [ -z "$LATEST_TAG"; then
+            echo "Failed to fetch latest tag, defaulting to v1.134.0"
+            LATEST_TAG="v1.134.0"
+          fi
+          echo "Latest Immich tag is: $LATEST_TAG"
+          echo "IMMICH_VERSION=$LATEST_TAG" >> $GITHUB_ENV
       - name: Build and push immich-server
         uses: docker/build-push-action@v5
         with:

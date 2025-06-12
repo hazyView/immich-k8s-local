@@ -1,4 +1,4 @@
-ARG IMMICH_VERSION # Or a specific tag like v1.95.0
+ARG IMMICH_VERSION=v1.134.0 # Or a specific tag like v1.95.0
 ENV MY_ENV_IMMICH=$IMMICH_VERSION
 ARG NODE_VERSION=18-alpine
 

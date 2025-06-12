@@ -53,6 +53,7 @@ jobs:
           fi
           echo "Latest Immich tag is: $LATEST_TAG"
           echo "IMMICH_VERSION=$LATEST_TAG" >> $GITHUB_ENV
+          echo "immich_version=$LATEST_TAG" >> $GITHUB_OUTPUT
       - name: Build and push immich-server
         uses: docker/build-push-action@v5
         with:
@@ -65,7 +66,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            IMMICH_VERSION=${{ env.IMMICH_VERSION }}
+            IMMICH_VERSION=${{ steps.immich_version.outputs.immich_version }}
       - name: Build and push immich-microservices
         uses: docker/build-push-action@v5
         with:

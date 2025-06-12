@@ -15,7 +15,7 @@ RUN npm install -g pnpm
 
 # Clone Immich repository
 RUN echo IMMICH_VERSION=$IMMICH_VERSION
-RUN git clone --depth 1 --branch 'v1.134.0' https://github.com/immich-app/immich.git
+RUN git clone --depth 1 --branch 'v1.134.0' https://github.com/immich-app/immich.git .
 
 # Install dependencies and build the server package
 # This depends heavily on Immich's monorepo structure and build commands
@@ -34,7 +34,7 @@ WORKDIR /usr/src/app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 COPY --chown=appuser:appgroup --from=builder /app/node_modules ./node_modules
 COPY --chown=appuser:appgroup --from=builder /app/packages/server/dist ./dist
-COPY --chown=appuser:appgroup --from=builder /app/packages/server/package.json .
+#COPY --chown=appuser:appgroup --from=builder /app/packages/server/package.json .
 # Copy other necessary files like .env.example if needed by startup script
 
 USER appuser

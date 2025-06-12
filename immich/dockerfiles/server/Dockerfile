@@ -10,6 +10,7 @@ RUN apk add --no-cache git python3 make g++
 RUN npm install -g pnpm
 
 # Clone Immich repository
+RUN echo IMMICH_VERSION=$IMMICH_VERSION
 RUN git clone --depth 1 --branch $IMMICH_VERSION https://github.com/immich-app/immich.git
 
 # Install dependencies and build the server package

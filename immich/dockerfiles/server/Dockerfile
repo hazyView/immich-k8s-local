@@ -1,8 +1,8 @@
 ARG IMMICH_VERSION=v1.134.0 # Or a specific tag like v1.95.0
-ENV MY_ENV_IMMICH=$IMMICH_VERSION
 ARG NODE_VERSION=18-alpine
 
 FROM node:${NODE_VERSION} AS builder
+ENV MY_ENV_IMMICH=$IMMICH_VERSION
 WORKDIR /app
 
 # Install build tools: git, pnpm (if Immich uses it)
@@ -10,7 +10,7 @@ RUN apk add --no-cache git python3 make g++
 RUN npm install -g pnpm
 
 # Clone Immich repository
-RUN git clone --depth 1 --branch "${IMMICH_VERSION}" https://github.com/immich-app/immich.git .
+RUN git clone --depth 1 --branch $IMMICH_VERSION https://github.com/immich-app/immich.git .
 
 # Install dependencies and build the server package
 # This depends heavily on Immich's monorepo structure and build commands

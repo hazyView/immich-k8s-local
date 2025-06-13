@@ -4,6 +4,8 @@ metadata:
   name: immich-ingress
   namespace: immich-app
   annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "0" # Allow large file uploads
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600" # Increase timeout for uploads
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
